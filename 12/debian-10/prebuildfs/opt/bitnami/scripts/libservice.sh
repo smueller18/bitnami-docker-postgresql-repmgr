@@ -62,11 +62,16 @@ stop_service_using_pid() {
         kill "$pid"
     fi
 
-    local counter=10
+    local counter=60
     while [[ "$counter" -ne 0 ]] && is_service_running "$pid"; do
         sleep 1
         counter=$((counter - 1))
     done
+
+    if [[ "$counter" -eq 0 ]] && is_service_running "$pid"; then
+      echo "The process with pid $pid has not terminated in 60 seconds."
+      return 1
+    fi
 }
 
 ########################
